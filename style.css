@@ -1,0 +1,17 @@
+#calculatorContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+}
+
+button {
+    min-height: 70px;
+    min-width: 100px;
+    font-family: Roboto, sans-serif;
+    font-size: 16px;
+    background-color: wheat;
+    margin: 4px;
+}
