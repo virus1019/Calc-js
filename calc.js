@@ -1,4 +1,5 @@
 let operatorExists = false;
+let firstNum = false;
 let currentOperator = null;
 let previousOperator = null;
 const input = document.querySelector('.calcInput')
@@ -12,24 +13,6 @@ input.value = '0';
 //adding all the event listeners
 //EQUALS event listener
 
-//if x and y are numbers, do the operation, display the result, set operator to null and operandclicked to false
-equals.addEventListener('click', function(){
-    if (currentOperator == null && x != ''){       // no operator
-        return;
-    }
-    if (currentOperator != null && x != '' && y === '') { 
-        y = x;
-    }
-
-
-
-
-    if (currentOperator != null && x != '' && y == '')
-
-    x = Number(x);
-    y = Number(y);
-    doOperation(x, y);
-})
 
 /*
 3 things necessary for equals to work:
@@ -43,6 +26,26 @@ when equals pressed --> checks if there is an operator
 if operator exists, 
 */
 
+//if x and y are numbers, do the operation, display the result, set operator to null and operandclicked to false
+equals.addEventListener('click', function(){
+    let temp = input.value;
+    if (currentOperator === null){       // no operator
+        return;
+    }
+    if (currentOperator != null && x != '' && y === '' && temp === '0') { 
+        y = x;
+    }
+    else if (currentOperator != null && x != '' && y === '' && temp != '0'){
+        y = input.value;
+        x = doOperation(x, y);
+        input.value = x;
+        y = '';
+        currentOperator = null;
+        firstNum = true;
+    }
+})
+
+
 //NUMBER  event listeners
 for (i = 0, len = numbers.length; i < len; i++){
     let buttonValue = numbers[i].value;
@@ -54,23 +57,34 @@ for (i = 0, len = numbers.length; i < len; i++){
 
 //OPERAND  event listeners
 for (i = 0, len = operands.length; i < len; i++){
-    currentOperator = operands[i].value;
+    let operandValue = operands[i].value;
 // not working at the moment because currentoperator assigned = it will never be null
 // --> need to use previousoperator here.
-    operands[i].addEventListener('click', function() {    
-        if (currentOperator === null && x === '' && y === ''){
-            x = input.value;
-            console.log("attempted to assign inputvalue to x");
+    operands[i].addEventListener('click', function() {   
+        currentOperator = operandValue;            
+        let temp = input.value;
+        if (previousOperator === null && x === '' && y === ''){         //if nothing defined, check input value, if not '', x = input value
+            if (temp != '0'){
+                x = input.value;
+                //console.log(`x is now ${x}`);
+            }
         }
-        if (currentOperator != null && y != '' && x != '') {
-            doOperation(x, y);
-            console.log("attempted do operation")
+        else if (previousOperator != null && x != '' && temp != '0') {           //if x present
+            y = input.value;
+            x = doOperation(x, y);
+            y = '';
+            input.value = x;
+            previousOperator = null;
         }
-        if (currentOperator === null){
-            x = input.value;
-            operatorExists = true;
-        }
-    clearInput();
+        /*else if (previousOperator != null && x != '' && y === ''){           //if y = '', y = input.value; --> shouldnt be possible, since there is an operator if x is defined
+            if (temp != ''){
+                y = input.value;
+            }
+        }*/
+        previousOperator = currentOperator;
+        console.log(`current op is: "${currentOperator}" x is ${x}`);
+        operatorExists = true;
+        firstNum = true;
     });
 }
 
@@ -94,29 +108,17 @@ for (i = 0, len = operands.length; i < len; i++){
 
 //functions begin here
 function clearInput() {
-    /*if (currentOperator != null)
-    if (x == '' || x == null){
-        x = Number(input.value)
-    }
-    else if (x != '' || x != null){
-        y = Number(input.value);
-    }
-    /*if (currentOperator == null && input.value !== '') {
-        x = Number(input.value);
-    }
-    if (currentOperator != null) {
-        y = input.value;
-    }*/
     console.log(`x: ${x} y: ${y} operatorExists: ${operatorExists}`);
-    input.value = '';
+    input.value = '0';
 }
 
 function concatAndPrint(newNum) {       //get the current input text - concatenate it, and then replace the value
-    if (operatorExists == true){
+    if (firstNum === true){
         clearInput();
-        operatorExists == false;
+        firstNum = false;
     }
     let oldInput = input.value;
+    console.log(`${oldInput}`)
     if (oldInput === '0'){
         input.value = '';
     }
@@ -124,15 +126,20 @@ function concatAndPrint(newNum) {       //get the current input text - concatena
     let newInput = oldInput.concat(newNum);
     input.value = newInput;
 }
-
-
-function doOperation(x, y){
-    if (x === '' && y === ''){
-        input.value = 0;
-        return;
+function getInput(){
+    if (x === ''){
+        x = input.value;
     }
-    if (x != '' && y === ''){
-        y = x;
+}
+
+
+//when 
+//      = is pressed
+//      operator is pressed IF x & y are defined
+function doOperation(x, y){
+    let temp = input.value;
+    if (temp === '0' && x === '' && y === ''){      //if x&y undefined, return
+        return;
     }
 
     x = Number(x);
@@ -149,29 +156,32 @@ function doOperation(x, y){
     else if (currentOperator === '/'){
         x = divide(x, y)
     }
-    x = toString(x);
-    input.value = x;
-    y = '';
+    return x;
 }
 
+
+//math functions
 function add(x, y){
     x = x + y;
-    input.value = x;
+    console.log(`attempted add`)
     return x;
 }
 
 function subtract(x, y) {
     x = x - y;
+    console.log(`attempted subtract ${x} - ${y}`)
     return x;
 }
 
 function multiply(x, y) {
     x = x * y;
+    console.log(`attempted mult`)
     return x;
 }
 
 function divide(x, y){
     if (y === 0) return 'Cannot divide by 0';
     x = x / y;
+    console.log(`attempted div`)
     return x;` `
 }
