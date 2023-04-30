@@ -1,4 +1,3 @@
-let operatorExists = false;
 let firstNum = false;
 let currentOperator = null;
 let previousOperator = null;
@@ -37,7 +36,7 @@ equals.addEventListener('click', function(){
     }
     else if (currentOperator != null && x != '' && y === '' && temp != '0'){
         y = input.value;
-        x = doOperation(x, y);
+        x = doOperation(x, y, currentOperator);
         input.value = x;
         y = '';
         currentOperator = null;
@@ -63,17 +62,16 @@ for (i = 0, len = operands.length; i < len; i++){
     operands[i].addEventListener('click', function() {   
         currentOperator = operandValue;            
         let temp = input.value;
-        if (previousOperator === null && x === '' && y === ''){         //if nothing defined, check input value, if not '', x = input value
-            if (temp != '0'){
-                x = input.value;
-                //console.log(`x is now ${x}`);
-            }
+        if (previousOperator === null && x === '' && y === '' && temp != '0'){         //if nothing defined, check input value, if not '', x = input value
+            x = input.value;
+            console.log("x assigned was run")
         }
-        else if (previousOperator != null && x != '' && temp != '0') {           //if x present
+        else if (previousOperator != null && x != '' && y === '' && temp != '0') {           //if x & operator exist, and input not empty, let y = input then calculate
             y = input.value;
-            x = doOperation(x, y);
+            x = doOperation(x, y, previousOperator);
             y = '';
             input.value = x;
+            console.log(`dooperation was run with previous operator ${previousOperator}`);
             previousOperator = null;
         }
         /*else if (previousOperator != null && x != '' && y === ''){           //if y = '', y = input.value; --> shouldnt be possible, since there is an operator if x is defined
@@ -83,7 +81,7 @@ for (i = 0, len = operands.length; i < len; i++){
         }*/
         previousOperator = currentOperator;
         console.log(`current op is: "${currentOperator}" x is ${x}`);
-        operatorExists = true;
+        console.log(`previous op is: "${previousOperator}" x is ${x}`);
         firstNum = true;
     });
 }
@@ -108,7 +106,7 @@ for (i = 0, len = operands.length; i < len; i++){
 
 //functions begin here
 function clearInput() {
-    console.log(`x: ${x} y: ${y} operatorExists: ${operatorExists}`);
+    console.log(`x: ${x} y: ${y}`);
     input.value = '0';
 }
 
@@ -136,7 +134,7 @@ function getInput(){
 //when 
 //      = is pressed
 //      operator is pressed IF x & y are defined
-function doOperation(x, y){
+function doOperation(x, y, operator){
     let temp = input.value;
     if (temp === '0' && x === '' && y === ''){      //if x&y undefined, return
         return;
@@ -144,16 +142,16 @@ function doOperation(x, y){
 
     x = Number(x);
     y = Number(y);
-    if (currentOperator === '+'){
+    if (operator === '+'){
         x = add(x, y);
     }
-    else if (currentOperator === '-'){
+    else if (operator === '-'){
         x = subtract(x, y);
     }
-    else if (currentOperator === '*'){
+    else if (operator === '*'){
         x = multiply(x, y);
     }
-    else if (currentOperator === '/'){
+    else if (operator === '/'){
         x = divide(x, y)
     }
     return x;
@@ -162,26 +160,30 @@ function doOperation(x, y){
 
 //math functions
 function add(x, y){
+    console.log(`attempting add ${x} - ${y}`)
     x = x + y;
-    console.log(`attempted add`)
+    console.log(` add ${x}`)
     return x;
 }
 
 function subtract(x, y) {
+    console.log(`attempting subtract ${x} - ${y}`)
     x = x - y;
-    console.log(`attempted subtract ${x} - ${y}`)
+    console.log(` subtract ${x}`)
     return x;
 }
 
 function multiply(x, y) {
+    console.log(`attempting mul ${x} - ${y}`)
     x = x * y;
-    console.log(`attempted mult`)
+    console.log(` mul ${x}`)
     return x;
 }
 
 function divide(x, y){
     if (y === 0) return 'Cannot divide by 0';
+    console.log(`attempting divv ${x} - ${y}`)
     x = x / y;
-    console.log(`attempted div`)
+    console.log(` divv ${x}`)
     return x;` `
 }
